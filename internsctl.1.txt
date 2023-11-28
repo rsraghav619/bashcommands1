@@ -1,0 +1,77 @@
+.\" Man page for internsctl
+.\" Contact information: 
+.TH INTERNSCTL  "November 2023" "v0.1.0" "internsctl manual"
+
+.SH NAME
+internsctl \- custom command based on requirements stated
+
+.SH SYNOPSIS
+.B internsctl
+[commands]... [arguments]...
+
+.SH DESCRIPTION
+This manual page documents the custom command internsctl which is a command-line utility for retrieving system information and managing users.
+
+
+.SH OPTIONS
+.TP
+.B \-\-help
+Display the help message and exit.
+
+.TP
+.B \-\-version
+Display the version of internsctl.
+
+.TP
+.BR cpu " "getinfo
+Display CPU information.
+
+.TP
+.BR memory " "getinfo
+Display memory information.
+
+.TP
+.BR user " "create "<username>"
+Create a new user with login access and home directory.
+
+.TP
+.BR user " "list
+List all regular users on the server.
+
+.TP
+.BR user " "list " "\-\-sudo-only
+List all users with sudo permissions.
+
+.TP
+.BR file " "getinfo " ""<filename>"
+Get information about a file.
+
+.TP
+.BR file " "getinfo " ""[options] <filename>"
+Get desired information about a file.
+
+.SH OPTIONS FOR FILE GETINFO
+.TP
+.B \-\-size, \-s
+Print file size.
+
+.TP
+.B \-\-permissions, \-p
+Print file permissions.
+
+.TP
+.B \-\-owner, \-o
+Print file owner.
+
+.TP
+.B \-\-last-modified, \-m
+Print last modified time.
+
+.SH EXAMPLES
+.PP
+Display file information:
+.BR internsctl " "file " "getinfo " "--size  " "hello.txt
+
+
+.\" End of man page
+

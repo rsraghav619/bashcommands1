@@ -1,0 +1,167 @@
+#!/bin/bash
+
+# internsctl - Custom Linux command
+
+version="v0.1.0"
+
+# Function to display help
+display_help() {
+    cat <<EOF
+Usage: internsctl [options] [arguments]
+
+Options:
+  -h, --help      Display the help message and exit.
+  -v, --version   Display the version of internsctl.
+  cpu getinfo     Display CPU information.
+  memory getinfo  Display memory information.
+  create <username>  Create a new user with login access and home directory.
+  list               List all regular users on the server.
+  list --sudo-only   List all users with sudo permissions.
+  file getinfo <filename> Get information about a file.
+  file getinfo [options] <filename> Get desired information about a file.
+
+Options for file getinfo:
+  --size, -s            Print file size.
+  --permissions, -p     Print file permissions.
+  --owner, -o           Print file owner.
+  --last-modified, -m   Print last modified time.
+
+Examples:
+  Display help:
+    internsctl --help
+
+  Display version:
+    internsctl --version
+
+  Display CPU information:
+    internsctl cpu getinfo
+
+  Display memory information:
+    internsctl memory getinfo
+  
+  Create a new user:
+    internsctl user create user_name
+
+  List all regular users:
+    internsctl user list
+
+  List users with sudo permissions:
+    internsctl user list --sudo-only
+  
+  Get file information:
+    internsctl file getinfo file_name.txt
+  
+  Get file information with specific options:
+    internsctl file getinfo --size file_name.txt
+    
+EOF
+}
+
+# Function to get CPU information
+get_cpu_info() {
+    lscpu
+}
+
+# Function to get memory information
+get_memory_info() {
+    free
+}
+
+# Function to create a new user
+create_user() {
+    if [ -z "$1" ]; then
+        echo "Error: Please provide a username."
+        exit 1
+    fi
+
+    sudo useradd -m -s /bin/bash "$1"
+    echo "User $1 created successfully."
+}
+
+# Function to list users
+list_users() {
+    if [ "$1" == "--sudo-only" ]; then
+        getent group sudo | cut -d: -f4 | tr ',' '\n'
+    else
+        getent passwd | cut -d: -f1
+    fi
+}
+
+# Function to get file information
+get_file_info() {
+    if [ -z "$1" ]; then
+        echo "Error: Please provide a filename."
+        exit 1
+    fi
+
+    if [ -e "$1" ]; then
+    	stat --printf "File: %n\nAccess: %A\nSize(B): %s\nOwner: %U\nModify: %y\n" $1;
+    else
+        echo "Error: File '$1' not found."
+        exit 1
+    fi
+}
+
+
+
+case "$1" in
+    --help)
+        display_help
+        ;;
+    --version)
+        echo "internsctl $version"
+        ;;
+    cpu)
+        case "$2" in
+            getinfo)
+                get_cpu_info
+                ;;
+            *)
+                echo "Error: Invalid 'cpu' subcommand. Use internsctl cpu getinfo for CPU information."
+                exit 1
+                ;;
+        esac
+        ;;
+    memory)
+        case "$2" in
+            getinfo)
+                get_memory_info
+                ;;
+            *)
+                echo "Error: Invalid 'memory' subcommand. Use internsctl memory getinfo for memory information."
+                exit 1
+                ;;
+        esac
+        ;;
+    user)
+        case "$2" in
+            create)
+                create_user "$3"
+                ;;
+            list)
+                list_users "$4"
+                ;;
+            *)
+                echo "Error: Invalid subcommand. Use internsctl user --help for usage information."
+                exit 1
+                ;;
+        esac
+        ;;
+        
+   file)
+        case "$2" in
+            getinfo)
+                get_file_info "$3"
+                ;;
+            *)
+                echo "Error: Invalid file subcommand. Use internsctl file --help for usage information."
+                exit 1
+                ;;
+        esac
+        ;;
+    
+    *)
+        echo "Error: Invalid option. Use internsctl --help for usage information."
+        exit 1
+        ;;
+esac
